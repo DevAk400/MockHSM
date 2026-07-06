@@ -1,0 +1,186 @@
+A0 - Generate a key
+    Request:
+    ./send2hsm.rb "A00FFFS#72A3N00S00"
+
+    Response:
+    A100S1009672AN00S0000EC9E765DB22164FC14AED94F78705188FA19EB7A56C46DCDBB2D48BE0966DF5A88172726D4B10273B0005E
+
+
+
+M0 - Encrypt a message
+
+    ECB - request:
+
+    export MODE="00"  # ECB
+    export INPUT="2"  # text input
+    export OUTPUT="1" # hex output
+    export KEYTYPE="FFF"
+    export KEY="S1009672AN00S0000EC9E765DB22164FC14AED94F78705188FA19EB7A56C46DCDBB2D48BE0966DF5A88172726D4B10273"
+    export IV=""
+    export LENGTH="0020"
+    export MESSAGE="This is my encrypted message...."
+
+    ./send2hsm.rb "M0${MODE}${INPUT}${OUTPUT}${KEYTYPE}${KEY}${IV}${LENGTH}${MESSAGE}"
+
+    Response:
+    M1000040AFAAE26089FE95D26F7F2E389540636CE38CDD3109495DDFF0E22E17B4B576FC
+
+
+    CBC - request:
+
+    export MODE="01"
+    export INPUT="2"
+    export OUTPUT="1"
+    export KEYTYPE="FFF"
+    export KEY="S1009672AN00S0000EC9E765DB22164FC14AED94F78705188FA19EB7A56C46DCDBB2D48BE0966DF5A88172726D4B10273"
+    export IV="ADD8140EB113EFDC30D399DB13FAF397"
+    export LENGTH="0020"
+    export MESSAGE="This is my encrypted message...."
+
+    ./send2hsm.rb "M0${MODE}${INPUT}${OUTPUT}${KEYTYPE}${KEY}${IV}${LENGTH}${MESSAGE}"
+
+
+
+    Response:
+    M100ADD8140EB113EFDC30D399DB13FAF397004032330C65826A54270C13C363BDDF9ACF0C5BA4AD638815C1902A447E8616A195
+
+
+
+
+
+
+M2 - Decrypt a message
+
+
+    ECB - request:
+
+    export MODE="00"  # ECB
+    export INPUT="1"  # hex input
+    export OUTPUT="2" # text output
+    export KEYTYPE="FFF"
+    export KEY="S1009672AN00S0000EC9E765DB22164FC14AED94F78705188FA19EB7A56C46DCDBB2D48BE0966DF5A88172726D4B10273"
+    export IV=""
+    export LENGTH="0040"
+    export ENCRYPTED="AFAAE26089FE95D26F7F2E389540636CE38CDD3109495DDFF0E22E17B4B576FC"
+
+    ./send2hsm.rb "M2${MODE}${INPUT}${OUTPUT}${KEYTYPE}${KEY}${IV}${LENGTH}${ENCRYPTED}"
+
+    Response:
+    M3000020This is my encrypted message....
+
+
+
+    CBC - request:
+
+    export MODE="01"  # CBC
+    export INPUT="1"  # hex input
+    export OUTPUT="2" # text output
+    export KEYTYPE="FFF"
+    export KEY="S1009672AN00S0000EC9E765DB22164FC14AED94F78705188FA19EB7A56C46DCDBB2D48BE0966DF5A88172726D4B10273"
+    export IV="ADD8140EB113EFDC30D399DB13FAF397"
+    export LENGTH="0040"
+    export ENCRYPTED="32330C65826A54270C13C363BDDF9ACF0C5BA4AD638815C1902A447E8616A195"
+
+    ./send2hsm.rb "M2${MODE}${INPUT}${OUTPUT}${KEYTYPE}${KEY}${IV}${LENGTH}${ENCRYPTED}"
+
+    Response:
+    M300ADD8140EB113EFDC30D399DB13FAF3970020This is my encrypted message....
+
+
+
+
+
+
+
+
+BA - Encrypt pinblock
+    Request:
+    export PADPIN="1234FFFFFFFFFFFF"
+    export PAN="1234567890123452"
+    ./send2hsm.rb "BA${PADPIN}${PAN};"
+
+    Response:
+    BB00M053171AC77DBDC883833939B2FA6985E
+
+
+
+
+NG - Decrypt pinblock
+    Request:
+    export PAN="1234567890123452"
+    export ENCRYPTED="053171AC77DBDC883833939B2FA6985E"
+    ./send2hsm.rb "NG${PAN};M${ENCRYPTED}"
+
+    Response:
+    NH001234FFFFFFFF664303672866
+
+
+
+
+
+JG - pinblock LMK to ZPK
+    Request:
+    export ZPK="S1009672AN00S0000EC9E765DB22164FC14AED94F78705188FA19EB7A56C46DCDBB2D48BE0966DF5A88172726D4B10273"
+    export MODE="48"
+    export PAN="1234567890123452"
+    export ENCRYPTED="053171AC77DBDC883833939B2FA6985E"
+    ./send2hsm.rb "JG${ZPK}${MODE}${PAN};M${ENCRYPTED}"
+
+    Response:
+    JH007D807458092D288F072E31652D67F7DB
+
+
+
+
+JE - pinblock ZPK to LMK
+    Request:
+    export ZPK="S1009672AN00S0000EC9E765DB22164FC14AED94F78705188FA19EB7A56C46DCDBB2D48BE0966DF5A88172726D4B10273"
+    export PINBLOCK="7D807458092D288F072E31652D67F7DB"
+    export MODE="48"
+    export PAN="1234567890123452"
+    ./send2hsm.rb "JE${ZPK}${PINBLOCK}${MODE}${PAN};"
+
+    Response:
+    JF00053171AC77DBDC883833939B2FA6985E
+
+
+
+
+B2 - Echo
+    Request:
+    ./send2hsm.rb "B2000AHELLOWORLD"
+
+    Response:
+    B300HELLOWORLD
+
+
+
+C6 - Random hex
+    Request:
+    ./send2hsm.rb "C6"
+
+    Response:
+    C7002448556079B5E85F
+
+
+
+
+N0 - Randopm bytes
+    Request:
+    ./send2hsm.rb "N0200" | hexdump -C
+
+    Response:
+    00000000  4e 31 30 30 28 ee 4e 23  01 9e 38 4d 28 aa 86 f5  |N100(.N#..8M(...|
+    00000010  9f 37 31 39 9d 4e 8a 8b  dc ae 67 43 f5 c4 d5 55  |.719.N....gC...U|
+    00000020  a3 37 4c a0 9c 49 92 fb  0e 23 c4 0a 60 4b df e5  |.7L..I...#..`K..|
+    00000030  ee e4 2c 84 c0 3f ba 28  dd 8c b6 2d e5 8b 1e 3c  |..,..?.(...-...<|
+    00000040  1f 5b e5 86 9d 38 e7 c9  9d d2 28 04 c5 38 f9 81  |.[...8....(..8..|
+    00000050  9f 69 28 16 b8 63 11 df  b8 dd 16 db 29 f3 ff 81  |.i(..c......)...|
+    00000060  9e 63 e9 88 2b 55 a1 19  0c e9 e8 d5 23 24 0b cc  |.c..+U......#$..|
+    00000070  9c e2 be 9b df fd ad 3f  93 9a 80 97 5f 9d d6 e5  |.......?...._...|
+    00000080  17 6d 77 0c 82 15 c7 d2  b5 1d ca c7 fc af 34 df  |.mw...........4.|
+    00000090  70 ec cf cb e7 09 28 7a  5e aa 50 77 55 e8 5a 06  |p.....(z^.PwU.Z.|
+    000000a0  d2 e2 de fb dc 78 21 d9  2c 60 bd 98 96 8c 2e fe  |.....x!.,`......|
+    000000b0  fc 28 88 83 2d 5e c4 7e  f1 25 4f 4b 63 ce 87 96  |.(..-^.~.%OKc...|
+    000000c0  09 0d f4 ac 25 0f 81 7f  e3 4b be ec              |....%....K..|
+    000000cc
