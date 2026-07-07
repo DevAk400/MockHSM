@@ -1,5 +1,6 @@
 # MockHSM  
-![Mock HSM Logo](assets/logo.png)
+
+![Mock HSM Logo](/assets/mockhsm.png)
 
 
 ## Overview
