@@ -1,5 +1,5 @@
 # MockHSM  
-![Mock HSM Logo](assets/logo.svg)
+![Mock HSM Logo](assets/logo.png)
 
 
 ## Overview
